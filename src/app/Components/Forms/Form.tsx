@@ -4,11 +4,11 @@ import TextAreaField from './TextAreaField';
 import SelectField from './SelectField';
 import CheckboxField from './CheckboxField';
 import DateTimeField from './DateTimeFields';
-import { TicketStatus } from '@/app/Models/Tickets/TicketStatus';
-import { TicketPriority } from '@/app/Models/Tickets/TicketPriority';
 import { UUID } from 'crypto';
 import { RecurrencePattern } from '@/app/Models/Tickets/RecurrencePattern';
 import Button from '../Shared/Buttons';
+import { TicketPriority } from '@/app/Models/Tickets/TicketPriority';
+import { TicketStatus } from '@/app/Models/Tickets/TicketStatus';
 
 interface TicketFormProps {
     formTicket: Form;
