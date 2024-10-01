@@ -29,22 +29,32 @@ class TicketService {
 
     constructor() {
         this.axiosInstance = axios.create({
-            baseURL: 'https://localhost:7213/api/Ticket', // Replace with your actual API URL
+            baseURL: 'https://localhost:7213/api/Ticket',
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
-                
             },
         });
     }
 
-    public async createTicket(ticket: Ticket): Promise<AxiosResponse<Ticket>> {
+    private convertTicketEnums(ticket: Ticket): Ticket {
+        const statusIndex = Object.keys(TicketStatus).indexOf(ticket.status.toString());
+        const priorityIndex = Object.keys(TicketPriority).indexOf(ticket.priority.toString());
+
+        return {
+            ...ticket,
+            status: statusIndex,
+            priority: priorityIndex
+        };
+    }
+
+    public async createTicket(ticket: Ticket): Promise<AxiosResponse<Ticket> | undefined> {
         try {
-            const response = await this.axiosInstance.post<Ticket>('/', ticket);
+            const createdTicket = this.convertTicketEnums(ticket);
+            const response = await this.axiosInstance.post<Ticket>('/', createdTicket);
             return response;
         } catch (error) {
             this.handleError(error);
-            return Promise.reject(error);
         }
     }
 
@@ -54,7 +64,6 @@ class TicketService {
             return response;
         } catch (error) {
             this.handleError(error);
-            return undefined;
         }
     }
 
@@ -64,32 +73,17 @@ class TicketService {
             return response;
         } catch (error) {
             this.handleError(error);
-            return undefined;
         }
     }
 
-    public async updateTicket(ticket: Ticket): Promise<AxiosResponse<Ticket>> {
+    public async updateTicket(ticket: Ticket): Promise<AxiosResponse<Ticket> | undefined> {
         try {
-            const statusIndex = Object.keys(TicketStatus)
-                .indexOf(
-                    ticket.status.toString());
-
-            const priorityIndex = Object.keys(TicketPriority)
-                .indexOf(
-                    ticket.priority.toString());
-
-            const updatedTicket = {
-                ...ticket,
-                status: statusIndex,
-                priority: priorityIndex
-            }
-            
+            const updatedTicket = this.convertTicketEnums(ticket);
             const response = await this.axiosInstance.put<Ticket>('/', updatedTicket);
-            
             return response;
         } catch (error) {
             this.handleError(error);
-            return Promise.reject(error);
+            return undefined;
         }
     }
 
@@ -99,7 +93,6 @@ class TicketService {
             return response;
         } catch (error) {
             this.handleError(error);
-            return undefined;
         }
     }
 
