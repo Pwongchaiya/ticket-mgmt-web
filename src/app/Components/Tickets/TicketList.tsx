@@ -3,7 +3,6 @@ import TicketService from '@/app/Services/Tickets/TicketService';
 import { AxiosResponse } from 'axios';
 import { UUID } from 'crypto';
 import React, { useEffect, useState, useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import TicketDetails from '../Forms/TicketDetails';
 import EditForm from '../Forms/EditForm';
 import { TicketPriority } from '@/app/Models/Tickets/TicketPriority';
