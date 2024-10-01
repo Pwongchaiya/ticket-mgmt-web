@@ -2,11 +2,13 @@ import { Ticket } from "@/app/Models/Tickets/Ticket";
 import Form from "./Form";
 import { useState } from "react";
 
-const EditForm: React.FC<{
+interface EditFormProps {
     ticket: Ticket;
     onSave: (ticket: Ticket) => void;
     onCancel: () => void;
-}> = ({ ticket, onSave, onCancel }) => {
+}
+
+const EditForm: React.FC<EditFormProps> = ({ ticket, onSave, onCancel }) => {
     const [formTicket, setFormTicket] = useState<Ticket>(ticket);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

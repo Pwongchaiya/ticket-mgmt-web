@@ -5,10 +5,10 @@ import SelectField from './SelectField';
 import CheckboxField from './CheckboxField';
 import DateTimeField from './DateTimeFields';
 import { UUID } from 'crypto';
-import { RecurrencePattern } from '@/app/Models/Tickets/RecurrencePattern';
 import Button from '../Shared/Buttons';
-import { TicketPriority } from '@/app/Models/Tickets/TicketPriority';
 import { TicketStatus } from '@/app/Models/Tickets/TicketStatus';
+import { TicketPriority } from '@/app/Models/Tickets/TicketPriority';
+import { RecurrencePattern } from '@/app/Models/Tickets/RecurrencePattern';
 
 interface TicketFormProps {
     formTicket: Form;
@@ -44,16 +44,16 @@ const TicketForm: React.FC<TicketFormProps> = ({ formTicket, handleChange, handl
     const fields = [
         { component: InputField, label: "Title", name: "title", value: formTicket.title },
         { component: TextAreaField, label: "Description", name: "description", value: formTicket.description },
-        { component: SelectField, label: "Status", name: "status", value: formTicket.status, options:TicketStatus },
+        { component: SelectField, label: "Status", name: "status", value: formTicket.status, options: TicketStatus },
         { component: SelectField, label: "Priority", name: "priority", value: formTicket.priority, options: TicketPriority },
         { component: CheckboxField, label: "Is Recurring", name: "isRecurring", checked: formTicket.isRecurring },
         { component: CheckboxField, label: "Notification Enabled", name: "isNotificationEnabled", checked: formTicket.isNotificationEnabled },
-        { component: DateTimeField, label: "Completed At", name: "completedAt", value: formTicket.completedAt?.toISOString() || '', onChange: (e: any) => handleDateChange(new Date(e.target.value), 'completedAt') },
-        { component: DateTimeField, label: "Due Date", name: "dueDate", value: formTicket.dueDate?.toISOString() || '', onChange: (e: any) => handleDateChange(new Date(e.target.value), 'dueDate') },
+        { component: DateTimeField, label: "Completed At", name: "completedAt", value: formTicket.completedAt ? new Date(formTicket.completedAt).toISOString() : '', onChange: (e: any) => handleDateChange(new Date(e.target.value), 'completedAt') },
+        { component: DateTimeField, label: "Due Date", name: "dueDate", value: formTicket.dueDate ? new Date(formTicket.dueDate).toISOString() : '', onChange: (e: any) => handleDateChange(new Date(e.target.value), 'dueDate') },
         { component: InputField, label: "Assigned To User ID", name: "assignedToUserId", value: formTicket.assignedToUserId || '' },
         { component: InputField, label: "Created By User ID", name: "createdByUserId", value: formTicket.createdByUserId || '' },
         { component: InputField, label: "Recurrence Pattern", name: "recurrencePattern", value: formTicket.recurrencePattern || '' },
-        { component: DateTimeField, label: "Reminder Date", name: "reminderDate", value: formTicket.reminderDate?.toISOString() || '', onChange: (e: any) => handleDateChange(new Date(e.target.value), 'reminderDate') },
+        { component: DateTimeField, label: "Reminder Date", name: "reminderDate", value: formTicket.reminderDate ? new Date(formTicket.reminderDate).toISOString() : '', onChange: (e: any) => handleDateChange(new Date(e.target.value), 'reminderDate') },
         { component: InputField, label: "Estimated Time To Complete (Hours)", name: "estimatedTimeToCompleteInHours", type: "number", value: formTicket.estimatedTimeToCompleteInHours?.toString() || '' },
         { component: InputField, label: "Actual Time To Complete (Hours)", name: "actualTimeToCompleteInHours", type: "number", value: formTicket.actualTimeToCompleteInHours?.toString() || '' }
     ];

@@ -1,5 +1,6 @@
-import { TicketStatus } from '@/app/Models/Tickets/TicketStatus';
 import React from 'react';
+import { TicketStatus } from '@/app/Models/Tickets/TicketStatus';
+import { TicketPriority } from '@/app/Models/Tickets/TicketPriority';
 
 interface SelectFieldProps {
     label: string;
@@ -9,8 +10,6 @@ interface SelectFieldProps {
     options: Record<string, string>;
     defaultValue?: string;
 }
-
-import { TicketPriority } from '@/app/Models/Tickets/TicketPriority';
 
 const getStatusOrPriority = (num: number, label: string): string => {
     switch (label) {
