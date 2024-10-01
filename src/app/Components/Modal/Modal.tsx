@@ -1,11 +1,20 @@
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import TicketForm from '../Tickets/TicketForm';
 import './Modal.css';
 
-const Modal: React.FC = () => {
-    const [isOpen, setIsOpen] = useState(false);
+interface ModalProps {
+    initiallyOpen?: boolean;
+    onClose?: () => void;
+}
+
+const Modal: React.FC<ModalProps> = ({ initiallyOpen = false, onClose }) => {
+    const [isOpen, setIsOpen] = useState(initiallyOpen);
+
     const openModal = useCallback(() => setIsOpen(true), []);
-    const closeModal = useCallback(() => setIsOpen(false), []);
+    const closeModal = useCallback(() => {
+        setIsOpen(false);
+        onClose?.();
+    }, [onClose]);
 
     const handleOutsideClick = useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (e.target === e.currentTarget) {
@@ -13,27 +22,23 @@ const Modal: React.FC = () => {
         }
     }, [closeModal]);
 
+    useEffect(() => {
+        setIsOpen(initiallyOpen);
+    }, [initiallyOpen]);
+
+    const MemoizedTicketForm = useMemo(() => <TicketForm />, []);
+
     return (
-        <div>
-            <button 
-                onClick={openModal} 
-                aria-haspopup="dialog" 
-                aria-expanded={isOpen} 
-                className="open-modal-button"
-            >
-                Open Ticket Form
-            </button>
+        <div className="modal-container">
             {isOpen && (
                 <div className="modal-overlay" onClick={handleOutsideClick} role="dialog" aria-modal="true">
                     <div className="modal-content centered">
-                        <MemoizedTicketForm />
+                        {MemoizedTicketForm}
                     </div>
                 </div>
             )}
         </div>
     );
 };
-
-const MemoizedTicketForm = memo(TicketForm);
 
 export default Modal;
