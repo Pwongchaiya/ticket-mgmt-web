@@ -1,6 +1,4 @@
-import { RecurrencePattern } from '@/app/Models/TIckets/RecurrencePattern';
-import { TicketPriority } from '@/app/Models/TIckets/TicketPriority';
-import { TicketStatus } from '@/app/Models/TIckets/TicketStatus';
+import { RecurrencePattern } from '@/app/Models/Tickets/RecurrencePattern';
 import TicketService from '@/app/Services/Tickets/TicketService';
 import { AxiosResponse } from 'axios';
 import { UUID } from 'crypto';
@@ -8,6 +6,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import TicketDetails from '../Forms/TicketDetails';
 import EditForm from '../Forms/EditForm';
+import { TicketPriority } from '@/app/Models/Tickets/TicketPriority';
+import { TicketStatus } from '@/app/Models/Tickets/TicketStatus';
+
 
 interface Ticket {
     id: UUID,
@@ -115,44 +116,5 @@ const TicketList: React.FC<TicketListProps> = ({ onTicketsFetched }) => {
         </div>
     );
 };
-
-// const TicketForm: React.FC<{
-//     ticket: Ticket;
-//     onSave: (ticket: Ticket) => void;
-//     onCancel: () => void;
-// }> = ({ ticket, onSave, onCancel }) => {
-//     const [formTicket, setFormTicket] = useState<Ticket>(ticket);
-
-//     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-//         const { name, value, type } = e.target;
-//         const checked = (e.target as HTMLInputElement).checked;
-//         setFormTicket(prevTicket => ({
-//             ...prevTicket,
-//             [name]: type === 'checkbox' ? checked : value
-//         }));
-//     };
-
-//     const handleDateChange = (date: Date, name: string) => {
-//         setFormTicket(prevTicket => ({
-//             ...prevTicket,
-//             [name]: date
-//         }));
-//     };
-
-//     const handleSubmit = (e: React.FormEvent) => {
-//         e.preventDefault();
-//         onSave(formTicket);
-//     };
-
-//     return (
-//         <EditForm
-//             formTicket={formTicket}
-//             handleChange={handleChange}
-//             handleDateChange={handleDateChange}
-//             handleSubmit={handleSubmit}
-//             onCancel={onCancel}
-//         />
-//     );
-// };
 
 export default TicketList;

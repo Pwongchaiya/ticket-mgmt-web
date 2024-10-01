@@ -1,6 +1,6 @@
-import { Ticket } from "@/app/Models/TIckets/Ticket";
-import { TicketPriority } from "@/app/Models/TIckets/TicketPriority";
-import { TicketStatus } from "@/app/Models/TIckets/TicketStatus";
+import { Ticket } from "@/app/Models/Tickets/Ticket";
+import { TicketPriority } from "@/app/Models/Tickets/TicketPriority";
+import { TicketStatus } from "@/app/Models/Tickets/TicketStatus";
 
 const TicketDetails: React.FC<{
     ticket: Ticket;
