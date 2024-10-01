@@ -1,4 +1,4 @@
-import { Ticket } from "@/app/Models/TIckets/Ticket";
+import { Ticket } from "@/app/Models/Tickets/Ticket";
 import Form from "./Form";
 import { useState } from "react";
 

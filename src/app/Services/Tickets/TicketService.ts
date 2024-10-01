@@ -1,6 +1,6 @@
-import { RecurrencePattern } from '@/app/Models/TIckets/RecurrencePattern';
-import { TicketPriority } from '@/app/Models/TIckets/TicketPriority';
-import { TicketStatus } from '@/app/Models/TIckets/TicketStatus';
+import { RecurrencePattern } from '@/app/Models/Tickets/RecurrencePattern';
+import { TicketPriority } from '@/app/Models/Tickets/TicketPriority';
+import { TicketStatus } from '@/app/Models/Tickets/TicketStatus';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { UUID } from 'crypto';
 
