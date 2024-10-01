@@ -4,6 +4,7 @@ import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import TicketList from "./Components/Tickets/TicketList";
 import TicketForm from "./Components/Tickets/TicketForm";
+import Modal from "./Components/Modal/Modal";
 
 const Home: React.FC = () => {
   const [tickets, setTickets] = useState<{ title: string; description: string }[]>([]);
@@ -14,7 +15,8 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      <TicketForm onSubmit={handleAddTicket} />
+      <Modal />
+      {/* <TicketForm /> */}
       <TicketList />
     </div>
   );
