@@ -15,7 +15,12 @@ const Modal: React.FC = () => {
 
     return (
         <div>
-            <button onClick={openModal} aria-haspopup="dialog" aria-expanded={isOpen}>
+            <button 
+                onClick={openModal} 
+                aria-haspopup="dialog" 
+                aria-expanded={isOpen} 
+                className="open-modal-button"
+            >
                 Open Ticket Form
             </button>
             {isOpen && (
