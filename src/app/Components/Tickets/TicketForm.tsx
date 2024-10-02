@@ -7,6 +7,7 @@ import { TicketStatus } from '@/app/Models/Tickets/TicketStatus';
 import { TicketPriority } from '@/app/Models/Tickets/TicketPriority';
 import { RecurrencePattern } from '@/app/Models/Tickets/RecurrencePattern';
 import { UUID } from 'crypto';
+import { TextField, Button, Checkbox, FormControlLabel, Select, MenuItem, InputLabel, FormControl, Box, Typography, Alert, SelectChangeEvent } from '@mui/material';
 
 interface Ticket {
     id: `${string}-${string}-${string}-${string}-${string}`,
@@ -24,24 +25,24 @@ interface Ticket {
     recurrencePattern?: RecurrencePattern,
 }
 
-const TicketForm = () => {
-    const initialFormData = useMemo(() => ({
-        title: '',
-        description: '',
-        status: TicketStatus.New,
-        priority: TicketPriority.Low,
-        createdDate: new Date(),
-        updatedDate: new Date(),
-        isRecurring: false,
-        isNotificationEnabled: false,
-        dueDate: null,
-        assignedToUserId: null,
-        createdByUserId: null,
-        recurrencePattern: null,
-    }), []);
+const initialFormData = {
+    title: '',
+    description: '',
+    status: TicketStatus.New,
+    priority: TicketPriority.Low,
+    createdDate: new Date(),
+    updatedDate: new Date(),
+    isRecurring: false,
+    isNotificationEnabled: false,
+    dueDate: null,
+    assignedToUserId: null,
+    createdByUserId: null,
+    recurrencePattern: null,
+};
 
+const TicketForm = () => {
     const [formData, setFormData] = useState(initialFormData);
-    const [state, setState] = useState<{ error: string | null, tickets: Ticket[] }>({ error: null, tickets: [] });
+    const [state, setState] = useState<{ error: string | null, success: string | null, tickets: Ticket[] }>({ error: null, success: null, tickets: [] });
 
     const handleAddTicket = useCallback((ticket: Ticket) => {
         setState(prevState => ({
@@ -50,8 +51,9 @@ const TicketForm = () => {
         }));
     }, []);
 
-    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | SelectChangeEvent<string>) => {
+        const { name, value } = e.target;
+        const type = (e.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).type;
         const checked = (e.target as HTMLInputElement).checked;
         setFormData(prevData => ({
             ...prevData,
@@ -73,56 +75,70 @@ const TicketForm = () => {
             await TicketService.createTicket(ticketData);
             handleAddTicket(ticketData);
             setFormData(initialFormData);
-            setState(prevState => ({ ...prevState, error: null }));
+            setState(prevState => ({ ...prevState, error: null, success: 'Ticket created successfully!' }));
         } catch (error) {
-            setState(prevState => ({ ...prevState, error: 'Failed to create ticket. Please try again.' }));
+            setState(prevState => ({ ...prevState, error: 'Failed to create ticket. Please try again.', success: null }));
         }
-    }, [handleAddTicket, formData, initialFormData]);
+    }, [handleAddTicket, formData]);
 
     const handleCancel = useCallback(() => {
         setFormData(initialFormData);
-    }, [initialFormData]);
+    }, []);
 
     const renderField = useCallback((label: string, name: string, type: string = 'text', required: boolean = false, options?: Record<string, string>) => {
-        const commonProps = {
-            id: name,
-            name,
-            value: formData[name as keyof typeof formData] as string,
-            onChange: handleChange,
-            className: "w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500",
-            required
-        };
-
         return (
-            <div className="mb-4">
-                <label className="block text-gray-700 mb-2" htmlFor={name}>{label}</label>
+            <Box mb={2}>
                 {type === 'textarea' ? (
-                    <textarea {...commonProps} />
+                    <TextField
+                        label={label}
+                        name={name}
+                        value={formData[name as keyof typeof formData] as string}
+                        onChange={handleChange}
+                        fullWidth
+                        multiline
+                        rows={4}
+                        required={required}
+                    />
                 ) : type === 'select' && options ? (
-                    <select {...commonProps}>
-                        {Object.entries(options).map(([key, value]) => (
-                            <option key={key} value={value}>{key}</option>
-                        ))}
-                    </select>
+                    <FormControl fullWidth required={required}>
+                        <InputLabel>{label}</InputLabel>
+                        <Select
+                            label={label}
+                            name={name}
+                            value={formData[name as keyof typeof formData] as string}
+                            onChange={handleChange}
+                        >
+                            {Object.entries(options).map(([key, value]) => (
+                                <MenuItem key={key} value={value}>{key}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 ) : (
-                    <input type={type} {...commonProps} />
+                    <TextField
+                        label={label}
+                        name={name}
+                        type={type}
+                        value={formData[name as keyof typeof formData] as string}
+                        onChange={handleChange}
+                        fullWidth
+                        required={required}
+                    />
                 )}
-            </div>
+            </Box>
         );
     }, [formData, handleChange]);
 
     const renderCheckboxField = useCallback((label: string, name: string) => (
-        <div className="mb-4 flex items-center">
-            <input
-                type="checkbox"
-                id={name}
-                name={name}
-                checked={formData[name as keyof typeof formData] as boolean}
-                onChange={handleChange}
-                className="mr-2"
-            />
-            <label className="text-gray-700" htmlFor={name}>{label}</label>
-        </div>
+        <FormControlLabel
+            control={
+                <Checkbox
+                    name={name}
+                    checked={formData[name as keyof typeof formData] as boolean}
+                    onChange={handleChange}
+                />
+            }
+            label={label}
+        />
     ), [formData, handleChange]);
 
     const priorityOptions = useMemo(() => 
@@ -130,25 +146,28 @@ const TicketForm = () => {
     []);
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md mx-auto" style={{ width: '100%' }}>
-            <h2 className="text-2xl font-semibold mb-6 text-center">Create a New Ticket</h2>
-            {state.error && <div className="text-red-500 mb-4 text-center">{state.error}</div>}
+        <Box bgcolor="white" p={4} borderRadius={2} boxShadow={3} mx="auto" maxWidth={600}>
+            <Typography variant="h4" component="h2" gutterBottom align="center">
+                Create a New Ticket
+            </Typography>
+            {state.error && <Alert severity="error" sx={{ mb: 2 }}>{state.error}</Alert>}
+            {state.success && <Alert severity="success" sx={{ mb: 2 }}>{state.success}</Alert>}
             <form onSubmit={handleSubmit}>
                 {renderField('Title', 'title', 'text', true)}
                 {renderField('Description', 'description', 'textarea', true)}
                 {renderField('Priority', 'priority', 'select', true, priorityOptions)}
                 {renderCheckboxField('Is Recurring', 'isRecurring')}
                 {renderCheckboxField('Enable Notifications', 'isNotificationEnabled')}
-                <div className="flex justify-center space-x-4">
-                    <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition duration-200">
+                <Box display="flex" justifyContent="center" mt={2}>
+                    <Button type="submit" variant="contained" color="primary" sx={{ mr: 2 }}>
                         Create
-                    </button>
-                    <button type="button" onClick={handleCancel} className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 transition duration-200">
+                    </Button>
+                    <Button type="button" variant="contained" color="secondary" onClick={handleCancel}>
                         Cancel
-                    </button>
-                </div>
+                    </Button>
+                </Box>
             </form>
-        </div>
+        </Box>
     );
 };
 

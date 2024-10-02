@@ -1,94 +1,151 @@
+/** @jsxImportSource @emotion/react */
+import React, { forwardRef, useRef } from 'react';
 import { Ticket } from "@/app/Models/Tickets/Ticket";
 import { TicketPriority } from "@/app/Models/Tickets/TicketPriority";
 import { TicketStatus } from "@/app/Models/Tickets/TicketStatus";
+import styled from '@emotion/styled';
+import { darken } from '@mui/material';
 
-const TicketDetails: React.FC<{
+const Container = styled.div`
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    margin: 0 auto;
+    max-width: 64rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+`;
+
+const HeaderContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+`;
+
+const Title = styled.h2`
+    font-size: 1.875rem;
+    font-weight: bold;
+    color: #1f2937;
+`;
+
+const ActionButton = styled.button<{ color: string }>`
+    padding: 0.5rem 1rem;
+    background-color: ${({ color }) => color};
+    color: white;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: medium;
+    transition: background-color 0.3s;
+    &:hover {
+        background-color: ${({ color }) => darken(color, 0.1)};
+    }
+`;
+
+const Section = styled.div`
+    background-color: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    flex-grow: 1;
+`;
+
+const SectionHeader = styled.h3`
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+`;
+
+const TicketDetails = forwardRef<HTMLDivElement, {
     ticket: Ticket;
-    onEdit: () => void;
+    onEdit: (ticket: Ticket, ref: React.RefObject<HTMLLIElement>) => void;
     onDelete: () => void;
-}> = ({ ticket, onEdit, onDelete }) => (
-    <div className="relative p-6 bg-white rounded-lg mx-auto max-w-4xl flex flex-col h-full">
-        <Header title={ticket.title} onEdit={onEdit} onDelete={onDelete} />
-        <div className="flex-grow grid grid-cols-1 gap-6 text-gray-700 mt-4">
-            <DescriptionSection description={ticket.description} />
-            <div className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
-                <DetailsSection ticket={ticket} />
-                <DatesSection ticket={ticket} />
-                <UserInfoSection ticket={ticket} />
-                <AdditionalInfoSection ticket={ticket} />
+}>(({ ticket, onEdit, onDelete }, ref) => {
+    const liRef = useRef<HTMLLIElement>(null);
+
+    return (
+        <Container ref={ref}>
+            <Header title={ticket.title} onEdit={() => onEdit(ticket, liRef)} onDelete={onDelete} />
+            <div css={{ flexGrow: 1, display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem', color: '#4b5563', marginTop: '1rem' }}>
+                <DescriptionSection description={ticket.description} />
+                <div css={{ flexGrow: 1, display: 'grid', gridTemplateColumns: '1fr', '@media (min-width: 768px)': { gridTemplateColumns: '1fr 1fr' }, gap: '1.5rem' }}>
+                    <DetailsSection ticket={ticket} />
+                    <DatesSection ticket={ticket} />
+                    <UserInfoSection ticket={ticket} />
+                    <AdditionalInfoSection ticket={ticket} />
+                </div>
             </div>
-        </div>
-    </div>
-);
+        </Container>
+    );
+});
 
 const Header: React.FC<{ title: string; onEdit: () => void; onDelete: () => void }> = ({ title, onEdit, onDelete }) => (
-    <div className="flex justify-between items-center mb-6 border-b pb-4">
-        <h2 className="text-3xl font-bold text-gray-800">{title}</h2>
-        <div className="flex space-x-4">
-            <ActionButton onClick={onEdit} label="Edit" color="blue" iconPath="M15.232 5.232l3.536 3.536M9 11l3.536 3.536m-2.036-2.036L5.232 15.232a2 2 0 01-2.828 0l-1.414-1.414a2 2 0 010-2.828l6.364-6.364a2 2 0 012.828 0l1.414 1.414a2 2 0 010 2.828z" />
-            <ActionButton onClick={onDelete} label="Delete" color="red" iconPath="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22" />
+    <HeaderContainer>
+        <Title>{title}</Title>
+        <div css={{ display: 'flex', gap: '1rem' }}>
+            <ActionButton onClick={onEdit} color="#3b82f6">
+                <svg css={{ width: '1.25rem', height: '1.25rem', marginRight: '0.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Edit
+            </ActionButton>
+            <ActionButton onClick={onDelete} color="#ef4444">
+                <svg css={{ width: '1.25rem', height: '1.25rem', marginRight: '0.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                Delete
+            </ActionButton>
         </div>
-    </div>
-);
-
-const ActionButton: React.FC<{ onClick: () => void; label: string; color: string; iconPath: string }> = ({ onClick, label, color, iconPath }) => (
-    <button 
-        onClick={onClick} 
-        className={`px-4 py-2 bg-${color}-600 text-white rounded-lg hover:bg-${color}-700 flex items-center text-sm font-medium transition duration-300`}
-        aria-label={label}
-    >
-        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={iconPath}></path>
-        </svg>
-        {label}
-    </button>
+    </HeaderContainer>
 );
 
 const DescriptionSection: React.FC<{ description: string }> = ({ description }) => (
-    <div className="bg-gray-50 p-4 rounded-lg shadow-sm flex-grow">
-        <SectionHeader title="Description" />
-        <p className="break-words whitespace-pre-wrap">{description}</p>
-    </div>
+    <Section>
+        <SectionHeader>Description</SectionHeader>
+        <p css={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{description}</p>
+    </Section>
 );
 
 const DetailsSection: React.FC<{ ticket: Ticket }> = ({ ticket }) => (
-    <div className="bg-gray-50 p-4 rounded-lg shadow-sm flex-grow">
-        <SectionHeader title="Details" />
+    <Section>
+        <SectionHeader>Details</SectionHeader>
         <p><strong>Status:</strong> {TicketStatus[ticket.status]}</p>
         <p><strong>Priority:</strong> {TicketPriority[ticket.priority]}</p>
-    </div>
+    </Section>
 );
 
 const DatesSection: React.FC<{ ticket: Ticket }> = ({ ticket }) => (
-    <div className="bg-gray-50 p-4 rounded-lg shadow-sm flex-grow">
-        <SectionHeader title="Dates" />
+    <Section>
+        <SectionHeader>Dates</SectionHeader>
         {ticket.dueDate && <p><strong>Due Date:</strong> {ticket.dueDate.toLocaleString()}</p>}
         {ticket.completedAt && <p><strong>Completed At:</strong> {ticket.completedAt.toLocaleString()}</p>}
         {ticket.reminderDate && <p><strong>Reminder Date:</strong> {ticket.reminderDate.toLocaleString()}</p>}
-    </div>
+    </Section>
 );
 
 const UserInfoSection: React.FC<{ ticket: Ticket }> = ({ ticket }) => (
-    <div className="bg-gray-50 p-4 rounded-lg shadow-sm flex-grow">
-        <SectionHeader title="User Information" />
+    <Section>
+        <SectionHeader>User Information</SectionHeader>
         {ticket.assignedToUserId && <p><strong>Assigned To:</strong> {ticket.assignedToUserId}</p>}
         {ticket.createdByUserId && <p><strong>Created By:</strong> {ticket.createdByUserId}</p>}
-    </div>
+    </Section>
 );
 
 const AdditionalInfoSection: React.FC<{ ticket: Ticket }> = ({ ticket }) => (
-    <div className="bg-gray-50 p-4 rounded-lg shadow-sm flex-grow">
-        <SectionHeader title="Additional Info" />
+    <Section>
+        <SectionHeader>Additional Info</SectionHeader>
         {ticket.isRecurring && <p><strong>Is Recurring:</strong> Yes</p>}
         {ticket.isNotificationEnabled && <p><strong>Notification Enabled:</strong> Yes</p>}
         {ticket.recurrencePattern && <p><strong>Recurrence Pattern:</strong> {ticket.recurrencePattern}</p>}
         {ticket.estimatedTimeToCompleteInHours !== undefined && <p><strong>Estimated Time To Complete (Hours):</strong> {ticket.estimatedTimeToCompleteInHours}</p>}
         {ticket.actualTimeToCompleteInHours !== undefined && <p><strong>Actual Time To Complete (Hours):</strong> {ticket.actualTimeToCompleteInHours}</p>}
-    </div>
-);
-
-const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
-    <h3 className="text-xl font-semibold mb-2 text-gray-800">{title}</h3>
+    </Section>
 );
 
 export default TicketDetails;
