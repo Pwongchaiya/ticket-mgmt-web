@@ -2,9 +2,9 @@
 
 import { ReactNode } from 'react';
 import TicketList from "./Components/Tickets/TicketList";
-import Modal from "./Components/Modal/Modal";
+import GenericModal from "./Components/Modal/GenericModal";
 import Header from './Components/Header/Header';
-import Footer from './Components/Footer/footer';
+import Footer from './Components/Footer/Footer';
 
 interface LayoutProps {
   children: ReactNode;
@@ -23,7 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 const Home: React.FC = () => {
   return (
     <Layout>
-      <Modal />
+      <GenericModal />
       <TicketList />
     </Layout>
   );

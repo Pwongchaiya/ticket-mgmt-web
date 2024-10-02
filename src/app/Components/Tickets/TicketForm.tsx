@@ -7,7 +7,7 @@ import { TicketStatus } from '@/app/Models/Tickets/TicketStatus';
 import { TicketPriority } from '@/app/Models/Tickets/TicketPriority';
 import { RecurrencePattern } from '@/app/Models/Tickets/RecurrencePattern';
 import { UUID } from 'crypto';
-import { TextField, Button, Checkbox, FormControlLabel, Select, MenuItem, InputLabel, FormControl, Box, Typography, Alert, SelectChangeEvent } from '@mui/material';
+import { TextField, Button, Checkbox, FormControlLabel, Select, MenuItem, InputLabel, FormControl, Box, Typography, Alert, SelectChangeEvent, Modal } from '@mui/material';
 
 interface Ticket {
     id: `${string}-${string}-${string}-${string}-${string}`,
@@ -25,6 +25,12 @@ interface Ticket {
     recurrencePattern?: RecurrencePattern,
 }
 
+interface TicketFormProps {
+    isOpen: boolean;
+    handleOpen: () => void;
+    handleClose: () => void;
+}
+
 const initialFormData = {
     title: '',
     description: '',
@@ -40,7 +46,7 @@ const initialFormData = {
     recurrencePattern: null,
 };
 
-const TicketForm = () => {
+const TicketForm: React.FC<TicketFormProps> = ({ isOpen, handleOpen, handleClose }) => {
     const [formData, setFormData] = useState(initialFormData);
     const [state, setState] = useState<{ error: string | null, success: string | null, tickets: Ticket[] }>({ error: null, success: null, tickets: [] });
 
@@ -76,14 +82,16 @@ const TicketForm = () => {
             handleAddTicket(ticketData);
             setFormData(initialFormData);
             setState(prevState => ({ ...prevState, error: null, success: 'Ticket created successfully!' }));
+            handleClose();
         } catch (error) {
             setState(prevState => ({ ...prevState, error: 'Failed to create ticket. Please try again.', success: null }));
         }
-    }, [handleAddTicket, formData]);
+    }, [handleAddTicket, formData, handleClose]);
 
     const handleCancel = useCallback(() => {
         setFormData(initialFormData);
-    }, []);
+        handleClose();
+    }, [handleClose]);
 
     const renderField = useCallback((label: string, name: string, type: string = 'text', required: boolean = false, options?: Record<string, string>) => {
         return (
@@ -146,28 +154,32 @@ const TicketForm = () => {
     []);
 
     return (
-        <Box bgcolor="white" p={4} borderRadius={2} boxShadow={3} mx="auto" maxWidth={600}>
-            <Typography variant="h4" component="h2" gutterBottom align="center">
-                Create a New Ticket
-            </Typography>
-            {state.error && <Alert severity="error" sx={{ mb: 2 }}>{state.error}</Alert>}
-            {state.success && <Alert severity="success" sx={{ mb: 2 }}>{state.success}</Alert>}
-            <form onSubmit={handleSubmit}>
-                {renderField('Title', 'title', 'text', true)}
-                {renderField('Description', 'description', 'textarea', true)}
-                {renderField('Priority', 'priority', 'select', true, priorityOptions)}
-                {renderCheckboxField('Is Recurring', 'isRecurring')}
-                {renderCheckboxField('Enable Notifications', 'isNotificationEnabled')}
-                <Box display="flex" justifyContent="center" mt={2}>
-                    <Button type="submit" variant="contained" color="primary" sx={{ mr: 2 }}>
-                        Create
-                    </Button>
-                    <Button type="button" variant="contained" color="secondary" onClick={handleCancel}>
-                        Cancel
-                    </Button>
+        <div>
+            <Modal open={isOpen} onClose={handleClose}>
+                <Box bgcolor="white" p={4} borderRadius={2} boxShadow={3} mx="auto" maxWidth={600} mt={5}>
+                    <Typography variant="h4" component="h2" gutterBottom align="center">
+                        New Ticket
+                    </Typography>
+                    {state.error && <Alert severity="error" sx={{ mb: 2 }}>{state.error}</Alert>}
+                    {state.success && <Alert severity="success" sx={{ mb: 2 }}>{state.success}</Alert>}
+                    <form onSubmit={handleSubmit}>
+                        {renderField('Title', 'title', 'text', true)}
+                        {renderField('Description', 'description', 'textarea', true)}
+                        {renderField('Priority', 'priority', 'select', true, priorityOptions)}
+                        {renderCheckboxField('Is Recurring', 'isRecurring')}
+                        {renderCheckboxField('Enable Notifications', 'isNotificationEnabled')}
+                        <Box display="flex" justifyContent="center" mt={2}>
+                            <Button type="submit" variant="contained" color="primary" sx={{ mr: 2 }}>
+                                Create
+                            </Button>
+                            <Button type="button" variant="contained" color="secondary" onClick={handleCancel}>
+                                Cancel
+                            </Button>
+                        </Box>
+                    </form>
                 </Box>
-            </form>
-        </Box>
+            </Modal>
+        </div>
     );
 };
 

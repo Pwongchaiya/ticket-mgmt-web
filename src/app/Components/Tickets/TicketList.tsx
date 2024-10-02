@@ -8,7 +8,7 @@ import EditForm from '../Forms/EditForm';
 import { TicketPriority } from '@/app/Models/Tickets/TicketPriority';
 import { TicketStatus } from '@/app/Models/Tickets/TicketStatus';
 import { CircularProgress, Container, Typography, Alert, List, ListItem } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import Spinner from '../Shared/Spinner';
 
 interface Ticket {
     id: UUID;
@@ -34,33 +34,7 @@ interface TicketListProps {
     onTicketsFetched?: (tickets: Ticket[]) => void;
 }
 
-const useStyles = makeStyles({
-    container: {
-        padding: '16px',
-        maxWidth: '800px',
-        margin: '0 auto',
-    },
-    title: {
-        marginBottom: '24px',
-        textAlign: 'center',
-    },
-    loading: {
-        display: 'flex',
-        justifyContent: 'center',
-        padding: '16px',
-    },
-    error: {
-        textAlign: 'center',
-        color: 'red',
-        padding: '16px',
-    },
-    list: {
-        marginTop: '16px',
-    },
-});
-
 const TicketList: React.FC<TicketListProps> = ({ onTicketsFetched }) => {
-    const classes = useStyles();
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -99,7 +73,7 @@ const TicketList: React.FC<TicketListProps> = ({ onTicketsFetched }) => {
     const handleEdit = useCallback((ticket: Ticket, ref: RefObject<HTMLLIElement>) => {
         setEditingTicket(ticket);
         ticketRef.current = ref.current;
-    }, [setEditingTicket]);
+    }, []);
 
     const handleSave = useCallback(async (updatedTicket: Ticket) => {
         try {
@@ -123,23 +97,32 @@ const TicketList: React.FC<TicketListProps> = ({ onTicketsFetched }) => {
 
     if (loading) {
         return (
-            <div className={classes.loading}>
-                <CircularProgress />
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '16px' }}>
+                <Spinner />
             </div>
         );
     }
 
     if (error) {
         return (
-            <Alert severity="error" className={classes.error}>
+            <Alert severity="error" style={{ textAlign: 'center', color: 'red', padding: '16px' }}>
                 {error}
             </Alert>
         );
     }
 
     return (
-        <Container className={classes.container}>
-            <Typography variant="h4" className={classes.title}>
+        <Container sx={{ padding: '16px', maxWidth: '800px', margin: '0 auto' }}>
+            <Typography 
+                variant="h4" 
+                sx={{
+                    marginBottom: '24px',
+                    textAlign: 'center',
+                    fontFamily: 'Arial, sans-serif',
+                    fontWeight: 'bold',
+                    color: '#3f51b5',
+                }}
+            >
                 Ticket List
             </Typography>
             {editingTicket ? (
@@ -149,7 +132,7 @@ const TicketList: React.FC<TicketListProps> = ({ onTicketsFetched }) => {
                     onCancel={handleCancel}
                 />
             ) : (
-                <List className={classes.list}>
+                <List sx={{ marginTop: '16px' }}>
                     {tickets.map((ticket: Ticket) => (
                         <ListItem key={ticket.id}>
                             <TicketDetails

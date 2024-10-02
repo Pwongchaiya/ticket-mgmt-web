@@ -15,6 +15,7 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     height: 100%;
+    border: 1px solid #d1d5db;
 `;
 
 const HeaderContainer = styled.div`
@@ -45,6 +46,11 @@ const ActionButton = styled.button<{ color: string }>`
     &:hover {
         background-color: ${({ color }) => darken(color, 0.1)};
     }
+    svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-right: 0.5rem;
+    }
 `;
 
 const Section = styled.div`
@@ -62,11 +68,13 @@ const SectionHeader = styled.h3`
     color: #1f2937;
 `;
 
-const TicketDetails = forwardRef<HTMLDivElement, {
+interface TicketDetailsProps {
     ticket: Ticket;
     onEdit: (ticket: Ticket, ref: React.RefObject<HTMLLIElement>) => void;
     onDelete: () => void;
-}>(({ ticket, onEdit, onDelete }, ref) => {
+}
+
+const TicketDetails = forwardRef<HTMLDivElement, TicketDetailsProps>(({ ticket, onEdit, onDelete }, ref) => {
     const liRef = useRef<HTMLLIElement>(null);
 
     return (
@@ -85,18 +93,24 @@ const TicketDetails = forwardRef<HTMLDivElement, {
     );
 });
 
-const Header: React.FC<{ title: string; onEdit: () => void; onDelete: () => void }> = ({ title, onEdit, onDelete }) => (
+interface HeaderProps {
+    title: string;
+    onEdit: () => void;
+    onDelete: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ title, onEdit, onDelete }) => (
     <HeaderContainer>
         <Title>{title}</Title>
         <div css={{ display: 'flex', gap: '1rem' }}>
             <ActionButton onClick={onEdit} color="#3b82f6">
-                <svg css={{ width: '1.25rem', height: '1.25rem', marginRight: '0.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
                 </svg>
                 Edit
             </ActionButton>
             <ActionButton onClick={onDelete} color="#ef4444">
-                <svg css={{ width: '1.25rem', height: '1.25rem', marginRight: '0.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
                 Delete
@@ -105,14 +119,22 @@ const Header: React.FC<{ title: string; onEdit: () => void; onDelete: () => void
     </HeaderContainer>
 );
 
-const DescriptionSection: React.FC<{ description: string }> = ({ description }) => (
+interface DescriptionSectionProps {
+    description: string;
+}
+
+const DescriptionSection: React.FC<DescriptionSectionProps> = ({ description }) => (
     <Section>
         <SectionHeader>Description</SectionHeader>
         <p css={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{description}</p>
     </Section>
 );
 
-const DetailsSection: React.FC<{ ticket: Ticket }> = ({ ticket }) => (
+interface DetailsSectionProps {
+    ticket: Ticket;
+}
+
+const DetailsSection: React.FC<DetailsSectionProps> = ({ ticket }) => (
     <Section>
         <SectionHeader>Details</SectionHeader>
         <p><strong>Status:</strong> {TicketStatus[ticket.status]}</p>
@@ -120,7 +142,11 @@ const DetailsSection: React.FC<{ ticket: Ticket }> = ({ ticket }) => (
     </Section>
 );
 
-const DatesSection: React.FC<{ ticket: Ticket }> = ({ ticket }) => (
+interface DatesSectionProps {
+    ticket: Ticket;
+}
+
+const DatesSection: React.FC<DatesSectionProps> = ({ ticket }) => (
     <Section>
         <SectionHeader>Dates</SectionHeader>
         {ticket.dueDate && <p><strong>Due Date:</strong> {ticket.dueDate.toLocaleString()}</p>}
@@ -129,7 +155,11 @@ const DatesSection: React.FC<{ ticket: Ticket }> = ({ ticket }) => (
     </Section>
 );
 
-const UserInfoSection: React.FC<{ ticket: Ticket }> = ({ ticket }) => (
+interface UserInfoSectionProps {
+    ticket: Ticket;
+}
+
+const UserInfoSection: React.FC<UserInfoSectionProps> = ({ ticket }) => (
     <Section>
         <SectionHeader>User Information</SectionHeader>
         {ticket.assignedToUserId && <p><strong>Assigned To:</strong> {ticket.assignedToUserId}</p>}
@@ -137,7 +167,11 @@ const UserInfoSection: React.FC<{ ticket: Ticket }> = ({ ticket }) => (
     </Section>
 );
 
-const AdditionalInfoSection: React.FC<{ ticket: Ticket }> = ({ ticket }) => (
+interface AdditionalInfoSectionProps {
+    ticket: Ticket;
+}
+
+const AdditionalInfoSection: React.FC<AdditionalInfoSectionProps> = ({ ticket }) => (
     <Section>
         <SectionHeader>Additional Info</SectionHeader>
         {ticket.isRecurring && <p><strong>Is Recurring:</strong> Yes</p>}

@@ -8,7 +8,6 @@
   }
 }
 
-/* Ensure link text colors contrast with the background */
 a {
   color: var(--link-color);
   text-decoration: none;
@@ -18,15 +17,12 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Media query to show full navigation on larger screens */
 @media (min-width: 768px) {
   .hidden {
     display: block !important;
   }
 }
 
-/* Highlight the current page in the navigation menu */
 .text-blue-500 {
   color: #3b82f6;
 }
-
