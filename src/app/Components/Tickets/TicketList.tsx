@@ -151,7 +151,7 @@ const TicketList: React.FC<TicketListProps> = ({ onTicketsFetched }) => {
             ) : (
                 <List className={classes.list}>
                     {tickets.map((ticket: Ticket) => (
-                        <ListItem key={ticket.id} ref={editingTicket && ticket.id === editingTicket.id ? ticketRef : null}>
+                        <ListItem key={ticket.id}>
                             <TicketDetails
                                 ticket={ticket}
                                 onEdit={(ticket, ref) => handleEdit(ticket, ref)}
